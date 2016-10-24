@@ -5,7 +5,7 @@ import './App.css';
 
 class App extends Component {
 
-    constructor () {
+    constructor() {
         super();
 
         this.state = {
@@ -15,26 +15,52 @@ class App extends Component {
                     lng: 27.9568336
                 },
                 zoom: 13
-            }
+            },
+            option: "0",
+            isDrawingEnabled: false
         };
 
+        this.handleChange = this.handleChange.bind(this);
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleChange(e) {
+        this.setState({
+            option: e.target.value
+        });
+    }
+
+    handleClick(e) {
+        const { isDrawingEnabled } = this.state;
+
+        this.setState({
+            isDrawingEnabled: ! isDrawingEnabled
+        });
     }
 
     render() {
-        const { map } = this.state;
+        const { map, option, isDrawingEnabled } = this.state;
 
         return (
-            <Map
-                ref='map'
-                center={map.center}
-                zoom={map.zoom}
-            >
+            <div>
+                Enable drawing by selecting an option of the list:
+                <select value={option} onChange={this.handleChange}>
+                    <option value="0">Draw CircleMarker</option>
+                    <option value="1">Create CircleMarker by a click</option>
+                </select>
+                <button type="submit" onClick={this.handleClick}>{isDrawingEnabled ? 'Stop drawing' : 'Start drawing'}</button>
 
-                <TileLayer
-                    attribution='&copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                    url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
-                />
-            </Map>
+                <Map
+                    ref='map'
+                    center={map.center}
+                    zoom={map.zoom} >
+
+                    <TileLayer
+                        attribution='&copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                        url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+                    />
+                </Map>
+            </div>
         )
     }
 }
