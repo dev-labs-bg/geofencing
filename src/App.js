@@ -14,7 +14,18 @@ class App extends Component {
                     lat: 43.220578,
                     lng: 27.9568336
                 },
-                zoom: 13
+                zoom: 13,
+                mouseDown: false
+            },
+            circleMarker: {
+                center: {
+                    latlng: null,
+                    point: null
+                },
+                radius: {
+                    px: null,
+                    metres: null
+                }
             },
             option: "0",
             isDrawingEnabled: false
@@ -22,6 +33,9 @@ class App extends Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
+        this.handleMouseDown = this.handleMouseDown.bind(this);
+        this.handleMouseUp = this.handleMouseUp.bind(this);
+        this.handleMouseMove = this.handleMouseMove.bind(this);
     }
 
     handleChange(e) {
@@ -31,23 +45,72 @@ class App extends Component {
     }
 
     handleClick(e) {
-        let { isDrawingEnabled } = this.state;
+        let { circleMarker, isDrawingEnabled } = this.state;
 
         isDrawingEnabled = ( ! isDrawingEnabled);
 
         if ( isDrawingEnabled ) {
             this.refs.map.leafletElement.dragging.disable();
-        } else {
-            this.refs.map.leafletElement.dragging.enable();
+            circleMarker = {
+                center: {
+                    latlng: null,
+                    point: null
+                },
+                radius: {
+                    px: null,
+                    metres: null
+                }
+            };
         }
 
         this.setState({
+            circleMarker: circleMarker,
             isDrawingEnabled: isDrawingEnabled
         });
     }
 
+    handleMouseDown() {
+        let { map } = this.state;
+
+        map.mouseDown = true;
+        this.setState({map: map});
+    }
+
+    handleMouseUp() {
+        let { map } = this.state;
+
+        this.refs.map.leafletElement.dragging.enable();
+        map.mouseDown = false;
+        this.setState({
+            map: map,
+            isDrawingEnabled: false
+        });
+    }
+
+    handleMouseMove(e) {
+        let { map, circleMarker, isDrawingEnabled } = this.state;
+
+        if ( ! (map.mouseDown && isDrawingEnabled) ) return;
+
+        let point = this.refs.map.leafletElement.latLngToLayerPoint(e.latlng);
+
+        if ( ! this.hasCircleMarker() ) {
+            circleMarker.center.point = point;
+            circleMarker.center.latlng = e.latlng;
+        }
+
+        circleMarker.radius.px = point.distanceTo(circleMarker.center.point);
+        this.setState({circleMarker:circleMarker});
+    }
+
+    hasCircleMarker() {
+        const { circleMarker } = this.state;
+
+        return ( circleMarker.center.point !== null && circleMarker.radius.px !== null );
+    }
+
     render() {
-        const { map, option, isDrawingEnabled } = this.state;
+        const { map, circleMarker, option, isDrawingEnabled } = this.state;
 
         return (
             <div>
@@ -61,7 +124,14 @@ class App extends Component {
                 <Map
                     ref='map'
                     center={map.center}
-                    zoom={map.zoom} >
+                    zoom={map.zoom}
+                    onmousedown={this.handleMouseDown.bind(this)}
+                    onmouseup={this.handleMouseUp.bind(this)}
+                    onmousemove={this.handleMouseMove.bind(this)}
+                >
+                    { this.hasCircleMarker() ?
+                        <CircleMarker center={circleMarker.center.latlng} radius={circleMarker.radius.px} />
+                    : null}
 
                     <TileLayer
                         attribution='&copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
