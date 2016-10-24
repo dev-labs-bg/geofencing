@@ -31,10 +31,18 @@ class App extends Component {
     }
 
     handleClick(e) {
-        const { isDrawingEnabled } = this.state;
+        let { isDrawingEnabled } = this.state;
+
+        isDrawingEnabled = ( ! isDrawingEnabled);
+
+        if ( isDrawingEnabled ) {
+            this.refs.map.leafletElement.dragging.disable();
+        } else {
+            this.refs.map.leafletElement.dragging.enable();
+        }
 
         this.setState({
-            isDrawingEnabled: ! isDrawingEnabled
+            isDrawingEnabled: isDrawingEnabled
         });
     }
 
