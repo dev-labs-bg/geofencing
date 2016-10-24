@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Map, CircleMarker, TileLayer } from 'react-leaflet';
+import { Map, Circle, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
 
@@ -18,14 +18,8 @@ class App extends Component {
                 mouseDown: false
             },
             circleMarker: {
-                center: {
-                    latlng: null,
-                    point: null
-                },
-                radius: {
-                    px: null,
-                    metres: null
-                }
+                center: null,
+                radius: null
             },
             option: "0",
             isDrawingEnabled: false
@@ -52,14 +46,8 @@ class App extends Component {
         if ( isDrawingEnabled ) {
             this.refs.map.leafletElement.dragging.disable();
             circleMarker = {
-                center: {
-                    latlng: null,
-                    point: null
-                },
-                radius: {
-                    px: null,
-                    metres: null
-                }
+                center: null,
+                radius: null
             };
         }
 
@@ -92,21 +80,18 @@ class App extends Component {
 
         if ( ! (map.mouseDown && isDrawingEnabled) ) return;
 
-        let point = this.refs.map.leafletElement.latLngToLayerPoint(e.latlng);
-
         if ( ! this.hasCircleMarker() ) {
-            circleMarker.center.point = point;
-            circleMarker.center.latlng = e.latlng;
+            circleMarker.center = e.latlng;
         }
 
-        circleMarker.radius.px = point.distanceTo(circleMarker.center.point);
+        circleMarker.radius = e.latlng.distanceTo(circleMarker.center);
         this.setState({circleMarker:circleMarker});
     }
 
     hasCircleMarker() {
         const { circleMarker } = this.state;
 
-        return ( circleMarker.center.point !== null && circleMarker.radius.px !== null );
+        return ( circleMarker.radius !== null || circleMarker.radius !== null );
     }
 
     render() {
@@ -130,7 +115,7 @@ class App extends Component {
                     onmousemove={this.handleMouseMove.bind(this)}
                 >
                     { this.hasCircleMarker() ?
-                        <CircleMarker center={circleMarker.center.latlng} radius={circleMarker.radius.px} />
+                        <Circle center={circleMarker.center} radius={circleMarker.radius} />
                     : null}
 
                     <TileLayer
