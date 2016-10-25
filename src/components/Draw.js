@@ -9,6 +9,7 @@ import 'leaflet/dist/leaflet.css';
 import '../App.css';
 
 import SelectForm from './SelectForm';
+import SummaryPanel from './SummaryPanel';
 
 class Draw extends Component {
 
@@ -291,19 +292,19 @@ class Draw extends Component {
                             </Row>
                         </div>
                     </div>
-                    <Row>
-                        <Col lg={12} >
-                            <div className="panel panel-default">
-                                <div className="panel-heading">
-                                    <span className="glyphicon glyphicon-pushpin"></span> Drawing data</div>
-                                <div className="panel-body">
-                                    Radius: { radiusKM.toFixed(2) } km <br />
-                                    Latitude: { lat } <br />
-                                    Longitude: { lng } <br />
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
+                    <SummaryPanel
+                        heading="Drawing data"
+                        data={ [ {
+                            name: "Radius (km)",
+                            value: radiusKM.toFixed(2)
+                        }, {
+                            name: "Latitude",
+                            value: lat
+                        }, {
+                            name: "Longitude",
+                            value: lng
+                        } ] }
+                    />
                 </Col>
                 <Col md={10}>
                     <Map
