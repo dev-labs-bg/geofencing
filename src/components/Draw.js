@@ -24,7 +24,7 @@ class Draw extends Component {
                 zoom: 8,
                 mouseDown: false
             },
-            circleMarker: {
+            circle: {
                 center: null,
                 radius: null
             },
@@ -46,42 +46,42 @@ class Draw extends Component {
     }
 
     handleSlide(e) {
-        let { circleMarker } = this.state;
+        let { circle } = this.state;
 
-        circleMarker.radius = e.target.value * 1000;
-        this.setState({ circleMarker: circleMarker });
+        circle.radius = e.target.value * 1000;
+        this.setState({ circle: circle });
     }
 
     handleSubmit(option) {
-        let { circleMarker, isDrawingEnabled } = this.state;
+        let { circle, isDrawingEnabled } = this.state;
 
         isDrawingEnabled = ( ! isDrawingEnabled);
 
         if ( isDrawingEnabled ) {
             this.refs.map.leafletElement.dragging.disable();
-            circleMarker = {
+            circle = {
                 center: null,
                 radius: null
             };
         }
 
         this.setState({
-            circleMarker: circleMarker,
+            circle: circle,
             isDrawingEnabled: isDrawingEnabled,
             option: option
         });
     }
 
     handleMapClick(e) {
-        let { circleMarker, isDrawingEnabled, option } = this.state;
+        let { circle, isDrawingEnabled, option } = this.state;
 
         if ( ! (isDrawingEnabled && option === "1") ) return;
 
         this.refs.map.leafletElement.dragging.enable();
-        circleMarker.center = e.latlng;
-        circleMarker.radius = 100000;
+        circle.center = e.latlng;
+        circle.radius = 100000;
         this.setState({
-            circleMarker:circleMarker,
+            circle:circle,
             isDrawingEnabled: false
         });
     }
@@ -109,35 +109,35 @@ class Draw extends Component {
     }
 
     handleMouseMove(e) {
-        let { map, circleMarker, isDrawingEnabled, option } = this.state;
+        let { map, circle, isDrawingEnabled, option } = this.state;
 
         if ( ! (map.mouseDown && isDrawingEnabled && option === "0") ) return;
 
-        if ( ! this.hasCircleMarker() ) {
-            circleMarker.center = e.latlng;
+        if ( ! this.hasCircle() ) {
+            circle.center = e.latlng;
         }
 
-        circleMarker.radius = e.latlng.distanceTo(circleMarker.center);
-        this.setState({circleMarker:circleMarker});
+        circle.radius = e.latlng.distanceTo(circle.center);
+        this.setState({circle:circle});
     }
 
-    hasCircleMarker() {
-        const { circleMarker } = this.state;
+    hasCircle() {
+        const { circle } = this.state;
 
-        return ( circleMarker.radius !== null || circleMarker.center !== null );
+        return ( circle.radius !== null || circle.center !== null );
     }
 
     isSliderEnabled() {
         const { option } = this.state;
 
-        return ( option === '1' && this.hasCircleMarker());
+        return ( option === '1' && this.hasCircle());
     }
 
     render() {
-        const { map, circleMarker, isDrawingEnabled } = this.state;
-        const radiusKM = ( circleMarker.radius / 1000 );
-        const lat = ( this.hasCircleMarker() ? circleMarker.center.lat : 'N/A' );
-        const lng = ( this.hasCircleMarker() ? circleMarker.center.lng : 'N/A' );
+        const { map, circle, isDrawingEnabled } = this.state;
+        const radiusKM = ( circle.radius / 1000 );
+        const lat = ( this.hasCircle() ? circle.center.lat : 'N/A' );
+        const lng = ( this.hasCircle() ? circle.center.lng : 'N/A' );
 
         return (
             <Row>
@@ -208,8 +208,8 @@ class Draw extends Component {
                         onmouseup={this.handleMouseUp}
                         onmousemove={this.handleMouseMove}
                     >
-                        { this.hasCircleMarker() ?
-                            <Circle center={circleMarker.center} radius={circleMarker.radius} />
+                        { this.hasCircle() ?
+                            <Circle center={circle.center} radius={circle.radius} />
                         : null}
 
                         <TileLayer
