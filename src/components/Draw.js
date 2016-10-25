@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Map, Circle, TileLayer } from 'react-leaflet';
 import { Row, Col } from 'react-bootstrap';
+import ReactBootstrapSlider from 'react-bootstrap-slider';
+import 'bootstrap-slider/dist/css/bootstrap-slider.min.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'leaflet/dist/leaflet.css';
 import '../App.css';
@@ -35,10 +37,18 @@ class Draw extends Component {
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
+        this.handleSlide = this.handleSlide.bind(this);
     }
 
     handleChange(e) {
         this.setState({ option: e.target.value });
+    }
+
+    handleSlide(e) {
+        let { circleMarker } = this.state;
+
+        circleMarker.radius = e.target.value * 1000;
+        this.setState({ circleMarker: circleMarker });
     }
 
     handleSubmit(option) {
@@ -68,7 +78,7 @@ class Draw extends Component {
 
         this.refs.map.leafletElement.dragging.enable();
         circleMarker.center = e.latlng;
-        circleMarker.radius = 10000;
+        circleMarker.radius = 100000;
         this.setState({
             circleMarker:circleMarker,
             isDrawingEnabled: false
@@ -116,24 +126,49 @@ class Draw extends Component {
         return ( circleMarker.radius !== null || circleMarker.radius !== null );
     }
 
+    isSliderEnabled() {
+        const { circleMarker, option } = this.state;
+
+        return ( option === '1' && this.hasCircleMarker());
+    }
+
     render() {
-        const { map, circleMarker, isDrawingEnabled } = this.state;
+        const { map, circleMarker, isDrawingEnabled, option } = this.state;
+        const radiusKM = ( circleMarker.radius / 1000 );
 
         return (
             <Row>
                 <Col md={2}>
-                    <SelectForm
-                        labelText="Enable drawing by selecting an option of the list:"
-                        buttonText={isDrawingEnabled ? 'Stop drawing' : 'Start drawing'}
-                        options={ [{
-                            name: "Draw CircleMarker",
-                            value: "0"
-                        }, {
-                            name: "Create CircleMarker by a click",
-                            value: "1"
-                        }] }
-                        onSubmit={this.handleSubmit}
-                    />
+                    <Row>
+                        <Col lg={12} >
+                            <SelectForm
+                                labelText="Enable drawing by selecting an option of the list:"
+                                buttonText={isDrawingEnabled ? 'Stop drawing' : 'Start drawing'}
+                                options={ [{
+                                    name: "Draw CircleMarker",
+                                    value: "0"
+                                }, {
+                                    name: "Create CircleMarker by a click",
+                                    value: "1"
+                                }] }
+                                onSubmit={this.handleSubmit}
+                            />
+                         </Col>
+                    </Row>
+                    <br /> <br />
+                    <Row>
+                        <Col lg={12} >
+                            <ReactBootstrapSlider
+                                value={radiusKM}
+                                step={1}
+                                max={100}
+                                min={0}
+                                orientation="horizontal"
+                                change={this.handleSlide}
+                                disabled={this.isSliderEnabled() ? 'false' : 'disabled'}
+                            />
+                        </Col>
+                    </Row>
                 </Col>
                 <Col md={10}>
                     <Map
