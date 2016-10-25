@@ -3,6 +3,8 @@ import { Map, Circle, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
 
+import SelectForm from './components/SelectForm';
+
 class App extends Component {
 
     constructor() {
@@ -26,7 +28,7 @@ class App extends Component {
         };
 
         this.handleChange = this.handleChange.bind(this);
-        this.handleClick = this.handleClick.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
         this.handleMapClick = this.handleMapClick.bind(this);
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.handleMouseUp = this.handleMouseUp.bind(this);
@@ -39,7 +41,7 @@ class App extends Component {
         });
     }
 
-    handleClick(e) {
+    handleSubmit(option) {
         let { circleMarker, isDrawingEnabled } = this.state;
 
         isDrawingEnabled = ( ! isDrawingEnabled);
@@ -54,12 +56,13 @@ class App extends Component {
 
         this.setState({
             circleMarker: circleMarker,
-            isDrawingEnabled: isDrawingEnabled
+            isDrawingEnabled: isDrawingEnabled,
+            option: option
         });
     }
 
     handleMapClick(e) {
-        let { map, circleMarker, isDrawingEnabled, option } = this.state;
+        let { circleMarker, isDrawingEnabled, option } = this.state;
 
         if ( ! (isDrawingEnabled && option === "1") ) return;
 
@@ -82,7 +85,7 @@ class App extends Component {
     }
 
     handleMouseUp() {
-        let { map, isDrawingEnabled } = this.state;
+        let { map } = this.state;
 
         if ( map.mouseDown === false ) return;
 
@@ -114,16 +117,22 @@ class App extends Component {
     }
 
     render() {
-        const { map, circleMarker, option, isDrawingEnabled } = this.state;
+        const { map, circleMarker, isDrawingEnabled } = this.state;
 
         return (
             <div>
-                Enable drawing by selecting an option of the list:
-                <select value={option} onChange={this.handleChange}>
-                    <option value="0">Draw CircleMarker</option>
-                    <option value="1">Create CircleMarker by a click</option>
-                </select>
-                <button type="submit" onClick={this.handleClick}>{isDrawingEnabled ? 'Stop drawing' : 'Start drawing'}</button>
+                <SelectForm
+                    labelText="Enable drawing by selecting an option of the list:"
+                    buttonText={isDrawingEnabled ? 'Stop drawing' : 'Start drawing'}
+                    options={ [{
+                        name: "Draw CircleMarker",
+                        value: "0"
+                    }, {
+                        name: "Create CircleMarker by a click",
+                        value: "1"
+                    }] }
+                    onSubmit={this.handleSubmit}
+                />
 
                 <Map
                     ref='map'
