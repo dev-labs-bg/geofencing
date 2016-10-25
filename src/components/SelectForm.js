@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { FormGroup, FormControl, ControlLabel, Button } from 'react-bootstrap';
 
 class SelectForm extends Component {
 
@@ -36,16 +37,22 @@ class SelectForm extends Component {
     }
 
     render() {
-        const { option } = this.state;
-        const { labelText, buttonText } = this.props;
+        const { labelText, buttonText, buttonStyle } = this.props;
 
         return (
             <form onSubmit={ this.handleSubmit }>
-                <label>{ labelText }</label>
-                <select value={ option } onChange={ this.handleChange }>
-                    {this.renderOptions()}
-                </select>
-                <button type="submit">{ buttonText }</button>
+                <FormGroup controlId="formControlsSelect">
+                    <ControlLabel>{ labelText }</ControlLabel>
+                    <FormControl onChange={this.handleChange} componentClass="select" placeholder="select">
+                        {this.renderOptions()}
+                    </FormControl>
+                </FormGroup>
+
+                <div className="pull-right">
+                    <Button type="submit" bsStyle={buttonStyle}>
+                        { buttonText }
+                    </Button>
+                </div>
             </form>
         )
     }

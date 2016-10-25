@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { Map, Circle, TileLayer } from 'react-leaflet';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, FormGroup, ControlLabel } from 'react-bootstrap';
 import ReactBootstrapSlider from 'react-bootstrap-slider';
 import 'bootstrap-slider/dist/css/bootstrap-slider.min.css';
 import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/css/bootstrap-theme.min.css';
 import 'leaflet/dist/leaflet.css';
 import '../App.css';
 
@@ -20,7 +21,7 @@ class Draw extends Component {
                     lat: 43.220578,
                     lng: 27.9568336
                 },
-                zoom: 13,
+                zoom: 8,
                 mouseDown: false
             },
             circleMarker: {
@@ -127,13 +128,13 @@ class Draw extends Component {
     }
 
     isSliderEnabled() {
-        const { circleMarker, option } = this.state;
+        const { option } = this.state;
 
         return ( option === '1' && this.hasCircleMarker());
     }
 
     render() {
-        const { map, circleMarker, isDrawingEnabled, option } = this.state;
+        const { map, circleMarker, isDrawingEnabled } = this.state;
         const radiusKM = ( circleMarker.radius / 1000 );
         const lat = ( this.hasCircleMarker() ? circleMarker.center.lat : 'N/A' );
         const lng = ( this.hasCircleMarker() ? circleMarker.center.lng : 'N/A' );
@@ -141,42 +142,59 @@ class Draw extends Component {
         return (
             <Row>
                 <Col md={2}>
-                    <Row>
-                        <Col lg={12} >
-                            <SelectForm
-                                labelText="Enable drawing by selecting an option of the list:"
-                                buttonText={isDrawingEnabled ? 'Stop drawing' : 'Start drawing'}
-                                options={ [{
-                                    name: "Draw CircleMarker",
-                                    value: "0"
-                                }, {
-                                    name: "Create CircleMarker by a click",
-                                    value: "1"
-                                }] }
-                                onSubmit={this.handleSubmit}
-                            />
-                         </Col>
-                    </Row>
+                    <div className="panel panel-info">
+                        <div className="panel-heading">
+                            <span className="glyphicon glyphicon-cog"></span> Drawing options </div>
+                        <div className="panel-body">
+                            <Row>
+                                <Col lg={12} >
+                                    <SelectForm
+                                        labelText="Mode"
+                                        buttonText={isDrawingEnabled ? 'Stop drawing' : 'Start drawing'}
+                                        options={ [{
+                                            name: "Draw",
+                                            value: "0"
+                                        }, {
+                                            name: "Click",
+                                            value: "1"
+                                        }] }
+                                        onSubmit={this.handleSubmit}
+                                        buttonStyle={isDrawingEnabled ? 'danger' : 'primary'}
+                                    />
+                                 </Col>
+                            </Row>
 
+                            <Row>
+                                <Col lg={12} >
+                                    <FormGroup>
+                                        <ControlLabel>Radius (km)</ControlLabel>
+                                        <div className="form-control">
+                                            <ReactBootstrapSlider
+                                                value={radiusKM}
+                                                step={1}
+                                                max={100}
+                                                min={0}
+                                                orientation="horizontal"
+                                                change={this.handleSlide}
+                                                disabled={this.isSliderEnabled() ? 'false' : 'disabled'}
+                                            />
+                                        </div>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                        </div>
+                    </div>
                     <Row>
                         <Col lg={12} >
-                            <ReactBootstrapSlider
-                                value={radiusKM}
-                                step={1}
-                                max={100}
-                                min={0}
-                                orientation="horizontal"
-                                change={this.handleSlide}
-                                disabled={this.isSliderEnabled() ? 'false' : 'disabled'}
-                            />
-                        </Col>
-                    </Row>
-
-                    <Row>
-                        <Col lg={12} >
-                            Radius: { radiusKM } km <br />
-                            Latitude: { lat } <br />
-                            Longitude: { lng } <br />
+                            <div className="panel panel-default">
+                                <div className="panel-heading">
+                                    <span className="glyphicon glyphicon-pushpin"></span> Drawing data</div>
+                                <div className="panel-body">
+                                    Radius: { radiusKM.toFixed(2) } km <br />
+                                    Latitude: { lat } <br />
+                                    Longitude: { lng } <br />
+                                </div>
+                            </div>
                         </Col>
                     </Row>
                 </Col>
