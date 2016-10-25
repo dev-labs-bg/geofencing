@@ -12,27 +12,59 @@ import SelectForm from './SelectForm';
 
 class Draw extends Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.state = {
             map: {
+                // Where the map to be centered
                 center: {
                     lat: 43.220578,
                     lng: 27.9568336
                 },
+                // Zoom level
                 zoom: 8,
+                /**
+                 * We track the mouse down event.
+                 * Combined with mouse movement event,
+                 * we know whether or not the drawing process
+                 * is started.
+                 */
                 mouseDown: false
             },
             circle: {
+                /**
+                 * Center of the circle,
+                 * once it's drawn
+                 * @type {Leaflet/LatLng}
+                 */
                 center: null,
+                /**
+                 * Radius of the circle,
+                 * stored in meters
+                 * @type {Number}
+                 */
                 radius: null
             },
-            option: null,
+            /**
+             * What type of drawing
+             * mode is selected
+             *
+             * On "draw" mode - a circle is drawn by map dragging.
+             * On "click" mode - a circle with predefined radius is drawn
+             * where the user clicks.
+             *
+             * @type {String} - "draw" or "click"
+             */
+            option: 'draw',
+            /**
+             * We can start drawing,
+             * only if "Start drawing" button
+             * is explicitly clicked
+             */
             isDrawingEnabled: false
         };
 
-        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleMapClick = this.handleMapClick.bind(this);
         this.handleMouseDown = this.handleMouseDown.bind(this);
@@ -41,22 +73,35 @@ class Draw extends Component {
         this.handleSlide = this.handleSlide.bind(this);
     }
 
-    handleChange(e) {
-        this.setState({ option: e.target.value });
-    }
-
+    /**
+     * Handle radius slider
+     * value changing
+     *
+     * @param {Object} e - It has the new slider value
+     */
     handleSlide(e) {
         let { circle } = this.state;
 
+        // Convert radius in meters
         circle.radius = e.target.value * 1000;
         this.setState({ circle: circle });
     }
 
+    /**
+     * Handle Drawing mode form submission
+     *
+     * @param {String} option - What drawing mode is selected
+     */
     handleSubmit(option) {
         let { circle, isDrawingEnabled } = this.state;
 
         isDrawingEnabled = ( ! isDrawingEnabled);
 
+        /**
+         * If the drawing is enabled,
+         * then disable map dragging and
+         * remove previous drawn circle
+         */
         if ( isDrawingEnabled ) {
             this.refs.map.leafletElement.dragging.disable();
             circle = {
@@ -72,33 +117,68 @@ class Draw extends Component {
         });
     }
 
+    /**
+     * Handle map clicking
+     *
+     * Here we draw a circle,
+     * if "Click" drawing mode is selected.
+     *
+     * @param {Leaflet/LatLng} e - Where it's clicked
+     */
     handleMapClick(e) {
         let { circle, isDrawingEnabled, option } = this.state;
 
-        if ( ! (isDrawingEnabled && option === "1") ) return;
+        /**
+         * Continue only if the "Click" mode is selected and
+         * drawing button is clicked
+         */
+        if ( ! (isDrawingEnabled && option === "click") ) return;
 
+        // Enable map dragging
         this.refs.map.leafletElement.dragging.enable();
+
+        // Set center and radius
         circle.center = e.latlng;
+        // 100 km in meters
         circle.radius = 100000;
+
         this.setState({
             circle:circle,
             isDrawingEnabled: false
         });
     }
 
+    /**
+     * Handle map mouse down event
+     *
+     */
     handleMouseDown() {
         let { map, isDrawingEnabled, option } = this.state;
 
-        if ( ! (isDrawingEnabled && option === "0") ) return;
+        /**
+         * We track it only for "Draw" drawing mode,
+         * because of the combination of mouse down and move events
+         * result in circle drawing
+         */
+        if ( ! (isDrawingEnabled && option === "draw") ) return;
 
         map.mouseDown = true;
         this.setState({map: map});
     }
 
+    /**
+     * Handle map mouse up event
+     *
+     * Here we enable map dragging again
+     * and disable the drawing (isDrawingEnabled === false)
+     */
     handleMouseUp() {
-        let { map } = this.state;
+        let { map, isDrawingEnabled, option } = this.state;
 
-        if ( map.mouseDown === false ) return;
+        /**
+         * We track it only for "Draw" drawing mode
+         */
+        if ( ! (isDrawingEnabled && option === "draw") ) return;
 
         this.refs.map.leafletElement.dragging.enable();
         map.mouseDown = false;
@@ -108,11 +188,24 @@ class Draw extends Component {
         });
     }
 
+    /**
+     * Handle map mouse move event
+     *
+     * Here we draw a circle,
+     * by mouse dragging
+     *
+     * @param {Leaflet/LatLng} e - Where it's clicked
+     */
     handleMouseMove(e) {
         let { map, circle, isDrawingEnabled, option } = this.state;
 
-        if ( ! (map.mouseDown && isDrawingEnabled && option === "0") ) return;
+        /**
+         * Drawing happens, only if mouse is down and mouse movement occurs,
+         * and drawing mode is "Draw"
+         */
+        if ( ! (map.mouseDown && isDrawingEnabled && option === "draw") ) return;
 
+        // On the first drag we set the circle center
         if ( ! this.hasCircle() ) {
             circle.center = e.latlng;
         }
@@ -121,20 +214,33 @@ class Draw extends Component {
         this.setState({circle:circle});
     }
 
+    /**
+     * Is the circle already drawn?
+     *
+     * @returns {boolean}
+     */
     hasCircle() {
         const { circle } = this.state;
 
         return ( circle.radius !== null || circle.center !== null );
     }
 
+    /**
+     * Is the radius slider enabled?
+     *
+     * It's enabled if the drawing mode is "Click"
+     * and the circle exists
+     *
+     * @returns {boolean}
+     */
     isSliderEnabled() {
         const { option } = this.state;
 
-        return ( option === '1' && this.hasCircle());
+        return ( option === 'click' && this.hasCircle() );
     }
 
     render() {
-        const { map, circle, isDrawingEnabled } = this.state;
+        const { map, circle, isDrawingEnabled, option } = this.state;
         const radiusKM = ( circle.radius / 1000 );
         const lat = ( this.hasCircle() ? circle.center.lat : 'N/A' );
         const lng = ( this.hasCircle() ? circle.center.lng : 'N/A' );
@@ -151,12 +257,13 @@ class Draw extends Component {
                                     <SelectForm
                                         labelText="Mode"
                                         buttonText={isDrawingEnabled ? 'Stop drawing' : 'Start drawing'}
+                                        option={option}
                                         options={ [{
                                             name: "Draw",
-                                            value: "0"
+                                            value: "draw"
                                         }, {
                                             name: "Click",
-                                            value: "1"
+                                            value: "click"
                                         }] }
                                         onSubmit={this.handleSubmit}
                                         buttonStyle={isDrawingEnabled ? 'danger' : 'primary'}
