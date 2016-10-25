@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Draw from './components/Draw';
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
+
+    render() {
+        return (
+            <div className="container-fluid">
+                <Draw
+                    zoom={8}
+                    center={{
+                        lat: 43.220578,
+                        lng: 27.9568336
+                    }}
+                />
+            </div>
+        );
+    }
 }
 
 export default App;
