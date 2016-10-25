@@ -27,6 +27,7 @@ class App extends Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
+        this.handleMapClick = this.handleMapClick.bind(this);
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
@@ -57,15 +58,33 @@ class App extends Component {
         });
     }
 
+    handleMapClick(e) {
+        let { map, circleMarker, isDrawingEnabled, option } = this.state;
+
+        if ( ! (isDrawingEnabled && option === "1") ) return;
+
+        this.refs.map.leafletElement.dragging.enable();
+        circleMarker.center = e.latlng;
+        circleMarker.radius = 10000;
+        this.setState({
+            circleMarker:circleMarker,
+            isDrawingEnabled: false
+        });
+    }
+
     handleMouseDown() {
-        let { map } = this.state;
+        let { map, isDrawingEnabled, option } = this.state;
+
+        if ( ! (isDrawingEnabled && option === "0") ) return;
 
         map.mouseDown = true;
         this.setState({map: map});
     }
 
     handleMouseUp() {
-        let { map } = this.state;
+        let { map, isDrawingEnabled } = this.state;
+
+        if ( map.mouseDown === false ) return;
 
         this.refs.map.leafletElement.dragging.enable();
         map.mouseDown = false;
@@ -76,9 +95,9 @@ class App extends Component {
     }
 
     handleMouseMove(e) {
-        let { map, circleMarker, isDrawingEnabled } = this.state;
+        let { map, circleMarker, isDrawingEnabled, option } = this.state;
 
-        if ( ! (map.mouseDown && isDrawingEnabled) ) return;
+        if ( ! (map.mouseDown && isDrawingEnabled && option === "0") ) return;
 
         if ( ! this.hasCircleMarker() ) {
             circleMarker.center = e.latlng;
@@ -110,9 +129,10 @@ class App extends Component {
                     ref='map'
                     center={map.center}
                     zoom={map.zoom}
-                    onmousedown={this.handleMouseDown.bind(this)}
-                    onmouseup={this.handleMouseUp.bind(this)}
-                    onmousemove={this.handleMouseMove.bind(this)}
+                    onclick={this.handleMapClick}
+                    onmousedown={this.handleMouseDown}
+                    onmouseup={this.handleMouseUp}
+                    onmousemove={this.handleMouseMove}
                 >
                     { this.hasCircleMarker() ?
                         <Circle center={circleMarker.center} radius={circleMarker.radius} />
