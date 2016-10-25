@@ -316,7 +316,12 @@ class Draw extends Component {
                         onmousemove={this.handleMouseMove}
                     >
                         { this.hasCircle() ?
-                            <Circle center={circle.center} radius={circle.radius} />
+                            <Circle
+                                center={circle.center}
+                                radius={circle.radius}
+                                fillColor="#f44242"
+                                color="#f44242"
+                            />
                         : null}
 
                         <TileLayer
