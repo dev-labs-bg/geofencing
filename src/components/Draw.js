@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Map, Circle, TileLayer } from 'react-leaflet';
+import { Row, Col } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.css';
 import 'leaflet/dist/leaflet.css';
 import '../App.css';
 
@@ -118,39 +120,42 @@ class Draw extends Component {
         const { map, circleMarker, isDrawingEnabled } = this.state;
 
         return (
-            <div>
-                <SelectForm
-                    labelText="Enable drawing by selecting an option of the list:"
-                    buttonText={isDrawingEnabled ? 'Stop drawing' : 'Start drawing'}
-                    options={ [{
-                        name: "Draw CircleMarker",
-                        value: "0"
-                    }, {
-                        name: "Create CircleMarker by a click",
-                        value: "1"
-                    }] }
-                    onSubmit={this.handleSubmit}
-                />
-
-                <Map
-                    ref='map'
-                    center={map.center}
-                    zoom={map.zoom}
-                    onclick={this.handleMapClick}
-                    onmousedown={this.handleMouseDown}
-                    onmouseup={this.handleMouseUp}
-                    onmousemove={this.handleMouseMove}
-                >
-                    { this.hasCircleMarker() ?
-                        <Circle center={circleMarker.center} radius={circleMarker.radius} />
-                    : null}
-
-                    <TileLayer
-                        attribution='&copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                        url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+            <Row>
+                <Col md={2}>
+                    <SelectForm
+                        labelText="Enable drawing by selecting an option of the list:"
+                        buttonText={isDrawingEnabled ? 'Stop drawing' : 'Start drawing'}
+                        options={ [{
+                            name: "Draw CircleMarker",
+                            value: "0"
+                        }, {
+                            name: "Create CircleMarker by a click",
+                            value: "1"
+                        }] }
+                        onSubmit={this.handleSubmit}
                     />
-                </Map>
-            </div>
+                </Col>
+                <Col md={10}>
+                    <Map
+                        ref='map'
+                        center={map.center}
+                        zoom={map.zoom}
+                        onclick={this.handleMapClick}
+                        onmousedown={this.handleMouseDown}
+                        onmouseup={this.handleMouseUp}
+                        onmousemove={this.handleMouseMove}
+                    >
+                        { this.hasCircleMarker() ?
+                            <Circle center={circleMarker.center} radius={circleMarker.radius} />
+                        : null}
+
+                        <TileLayer
+                            attribution='&copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                            url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+                        />
+                    </Map>
+                </Col>
+            </Row>
         )
     }
 }
