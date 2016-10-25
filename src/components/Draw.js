@@ -123,7 +123,7 @@ class Draw extends Component {
     hasCircleMarker() {
         const { circleMarker } = this.state;
 
-        return ( circleMarker.radius !== null || circleMarker.radius !== null );
+        return ( circleMarker.radius !== null || circleMarker.center !== null );
     }
 
     isSliderEnabled() {
@@ -135,6 +135,8 @@ class Draw extends Component {
     render() {
         const { map, circleMarker, isDrawingEnabled, option } = this.state;
         const radiusKM = ( circleMarker.radius / 1000 );
+        const lat = ( this.hasCircleMarker() ? circleMarker.center.lat : 'N/A' );
+        const lng = ( this.hasCircleMarker() ? circleMarker.center.lng : 'N/A' );
 
         return (
             <Row>
@@ -155,7 +157,7 @@ class Draw extends Component {
                             />
                          </Col>
                     </Row>
-                    <br /> <br />
+
                     <Row>
                         <Col lg={12} >
                             <ReactBootstrapSlider
@@ -167,6 +169,14 @@ class Draw extends Component {
                                 change={this.handleSlide}
                                 disabled={this.isSliderEnabled() ? 'false' : 'disabled'}
                             />
+                        </Col>
+                    </Row>
+
+                    <Row>
+                        <Col lg={12} >
+                            Radius: { radiusKM } km <br />
+                            Latitude: { lat } <br />
+                            Longitude: { lng } <br />
                         </Col>
                     </Row>
                 </Col>
