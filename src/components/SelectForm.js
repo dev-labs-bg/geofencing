@@ -79,3 +79,17 @@ class SelectForm extends Component {
 }
 
 export default SelectForm;
+
+
+SelectForm.propTypes = {
+    labelText: React.PropTypes.string.isRequired,
+    buttonText: React.PropTypes.string.isRequired,
+    buttonStyle: React.PropTypes.string.isRequired,
+    // Which option value to be selected as default
+    option: React.PropTypes.string.isRequired,
+    /**
+     * Array of objects, those are passed in to the select element.
+     * Each object has to have "name" and "value" keys.
+     */
+    options: React.PropTypes.array.isRequired
+};

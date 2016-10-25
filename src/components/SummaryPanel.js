@@ -39,3 +39,12 @@ class SummaryPanel extends Component {
 }
 
 export default SummaryPanel;
+
+SummaryPanel.propTypes = {
+    heading: React.PropTypes.string.isRequired,
+    /**
+     * Data that is visualized in the panel body.
+     * It's array of objects. Each object has "name" and "value" keys.
+     */
+    data: React.PropTypes.array.isRequired
+};
