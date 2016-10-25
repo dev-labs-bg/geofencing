@@ -18,13 +18,6 @@ class Draw extends Component {
 
         this.state = {
             map: {
-                // Where the map to be centered
-                center: {
-                    lat: 43.220578,
-                    lng: 27.9568336
-                },
-                // Zoom level
-                zoom: 8,
                 /**
                  * We track the mouse down event.
                  * Combined with mouse movement event,
@@ -241,10 +234,12 @@ class Draw extends Component {
     }
 
     render() {
-        const { map, circle, isDrawingEnabled, option } = this.state;
+        const { circle, isDrawingEnabled, option } = this.state;
+        const { center, zoom } = this.props;
+        
         const radiusKM = ( circle.radius / 1000 );
-        const lat = ( this.hasCircle() ? circle.center.lat : 'N/A' );
-        const lng = ( this.hasCircle() ? circle.center.lng : 'N/A' );
+        const circleLatitude = ( this.hasCircle() ? circle.center.lat : 'N/A' );
+        const circleLongitude = ( this.hasCircle() ? circle.center.lng : 'N/A' );
 
         return (
             <Row>
@@ -299,18 +294,18 @@ class Draw extends Component {
                             value: radiusKM.toFixed(2)
                         }, {
                             name: "Latitude",
-                            value: lat
+                            value: circleLatitude
                         }, {
                             name: "Longitude",
-                            value: lng
+                            value: circleLongitude
                         } ] }
                     />
                 </Col>
                 <Col md={10}>
                     <Map
                         ref='map'
-                        center={map.center}
-                        zoom={map.zoom}
+                        center={center}
+                        zoom={zoom}
                         onclick={this.handleMapClick}
                         onmousedown={this.handleMouseDown}
                         onmouseup={this.handleMouseUp}
@@ -337,3 +332,14 @@ class Draw extends Component {
 }
 
 export default Draw;
+
+
+Draw.propTypes = {
+    // Zoom level of the map
+    zoom: React.PropTypes.number.isRequired,
+    /**
+     * Object that has "lat" and "lng" keys.
+     * It determines where the map to be center.
+     */
+    center: React.PropTypes.object.isRequired
+};
