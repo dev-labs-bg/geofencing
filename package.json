@@ -2,6 +2,7 @@
   "name": "geofencing-devlabs",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://dev-labs-bg.github.io/geofencing-demo/",
   "devDependencies": {
     "react-scripts": "0.7.0"
   },
