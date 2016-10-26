@@ -102,6 +102,8 @@ class Draw extends Component {
                 center: null,
                 radius: null
             };
+        } else {
+            this.refs.map.leafletElement.dragging.enable();
         }
 
         this.setState({
