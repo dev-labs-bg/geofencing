@@ -4,6 +4,8 @@
   "private": true,
   "homepage": "https://dev-labs-bg.github.io/geofencing-demo/",
   "devDependencies": {
+    "enzyme": "^2.5.1",
+    "react-addons-test-utils": "^15.3.2",
     "react-scripts": "0.7.0"
   },
   "dependencies": {
