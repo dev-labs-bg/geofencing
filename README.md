@@ -10,6 +10,8 @@ In the both modes you have *Drawing data* summary panel, where you can check the
 # Demo
 https://dev-labs-bg.github.io/geofencing-demo/
 
+![Geofencing demo](https://raw.githubusercontent.com/dev-labs-bg/geofencing/master/geofencing-demo.gif)
+
 # Installation
 _You’ll need to have Node >= 4 on your machine._
 
